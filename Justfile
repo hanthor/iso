@@ -888,17 +888,18 @@ retag-nvidia-on-ghcr working_tag="" stream="" dry_run="1":
 #   variant: lts, bluefin
 #   flavor: base, dx, gdx
 #   repo: local, ghcr
+
 # Usage: just local-iso <variant> <flavor> <repo>
 [group('ISO')]
 local-iso variant="lts" flavor="base" repo="ghcr":
-    hack/local-iso-build.sh {{variant}} {{flavor}} {{repo}}
+    hack/local-iso-build.sh {{ variant }} {{ flavor }} {{ repo }}
 
 # Build a local Bluefin LTS ISO using Titanoboa
 [group('ISO')]
 local-iso-lts flavor="base" repo="ghcr":
-    just local-iso lts {{flavor}} {{repo}}
+    just local-iso lts {{ flavor }} {{ repo }}
 
 # Build a local Bluefin (Fedora) ISO using Titanoboa
 [group('ISO')]
 local-iso-bluefin flavor="base" repo="ghcr":
-    just local-iso bluefin {{flavor}} {{repo}}
+    just local-iso bluefin {{ flavor }} {{ repo }}

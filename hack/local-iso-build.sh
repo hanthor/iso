@@ -3,7 +3,7 @@
 set -euo pipefail
 
 # Script to build Bluefin LTS images using the Titanoboa builder
-# Usage: local-iso-build.sh <flavor> <repo> [hook_script] [flatpaks_file]
+# Usage: local-iso-build.sh <variant> <flavor> <repo> [hook_script] [flatpaks_file]
 #   flavor: base, dx, gdx
 #   repo: local, ghcr
 #   hook_script: optional post_rootfs hook script (default: iso_files/configure_lts_iso_anaconda.sh)
@@ -15,14 +15,23 @@ IMAGE_NAME="${IMAGE_NAME:-bluefin}"
 # Resolve repo root (assuming script is in hack/)
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-# Bluefin LTS is based on CentOS Stream
-IMAGE_DISTRO="centos"
-variant="lts"
+variant="${1:-lts}"
+flavor="${2:-base}"
+repo="${3:-ghcr}"
 
-flavor="${1:-base}"
-repo="${2:-ghcr}"
-hook_script="${3:-$REPO_ROOT/iso_files/configure_lts_iso_anaconda.sh}"
-flatpaks_file="${4:-$REPO_ROOT/flatpaks/system-flatpaks.list}"
+if [ "$variant" == "lts" ]; then
+    IMAGE_DISTRO="centos"
+    DEFAULT_HOOK="$REPO_ROOT/iso_files/configure_lts_iso_anaconda.sh"
+elif [ "$variant" == "bluefin" ]; then
+    IMAGE_DISTRO="fedora"
+    DEFAULT_HOOK="$REPO_ROOT/iso_files/configure_iso_anaconda.sh"
+else
+    echo "Error: Unknown variant '$variant'. Supported variants: lts, bluefin"
+    exit 1
+fi
+
+hook_script="${4:-$DEFAULT_HOOK}"
+flatpaks_file="${5:-$REPO_ROOT/flatpaks/system-flatpaks.list}"
 
 # Verify hook script exists
 if [ ! -f "$hook_script" ]; then
